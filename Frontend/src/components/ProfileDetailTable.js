@@ -1,92 +1,166 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Search from "./Search";
 
 const ProfileDetails = () => {
-    const data = [
-        { profile: "P1", name: "John Doe", email: "john.doe@example.com", phoneNumber: "123-456-7890", dob: "1990-01-01", address: "123 Elm Street" },
-        { profile: "P2", name: "Jane Smith", email: "jane.smith@example.com", phoneNumber: "234-567-8901", dob: "1985-02-02", address: "456 Oak Avenue" },
-        { profile: "P3", name: "Alice Johnson", email: "alice.johnson@example.com", phoneNumber: "345-678-9012", dob: "1992-03-03", address: "789 Pine Road" },
-        { profile: "P4", name: "Bob Brown", email: "bob.brown@example.com", phoneNumber: "456-789-0123", dob: "1988-04-04", address: "101 Maple Lane" },
-        { profile: "P5", name: "Charlie Davis", email: "charlie.davis@example.com", phoneNumber: "567-890-1234", dob: "1995-05-05", address: "202 Birch Street" },
-        { profile: "P6", name: "Dana White", email: "dana.white@example.com", phoneNumber: "678-901-2345", dob: "2000-06-06", address: "303 Cedar Drive" },
-    ]
+    const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [filteredData, setFilteredData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const dataPerPage = 5;
+
+    // Function to load data from localStorage
+    const loadData = () => {
+        const profiles = JSON.parse(localStorage.getItem('profiles')) || [];
+        setData(profiles);
+        setFilteredData(profiles);
+    };
+
+    // Load data when the component mounts
+    useEffect(() => {
+        loadData();
+
+        // Add an event listener to detect changes in localStorage
+        window.addEventListener('storage', loadData);
+
+        // Cleanup event listener when the component unmounts
+        return () => {
+            window.removeEventListener('storage', loadData);
+        };
+    }, []);
+
+    // Update filtered data based on search query
+    useEffect(() => {
+        if (searchQuery) {
+            const lowercasedQuery = searchQuery.toLowerCase();
+            const newFilteredData = data.filter(profile =>
+                profile.name.toLowerCase().includes(lowercasedQuery) ||
+                profile.email.toLowerCase().includes(lowercasedQuery) ||
+                profile.phoneNumber.toLowerCase().includes(lowercasedQuery) ||
+                profile.city.toLowerCase().includes(lowercasedQuery) ||
+                profile.district.toLowerCase().includes(lowercasedQuery) ||
+                profile.province.toLowerCase().includes(lowercasedQuery) ||
+                profile.country.toLowerCase().includes(lowercasedQuery)
+            );
+            setFilteredData(newFilteredData);
+        } else {
+            setFilteredData(data);
+        }
+    }, [searchQuery, data]);
 
     // Logic to paginate
     const indexOfLastData = currentPage * dataPerPage;
     const indexOfFirstData = indexOfLastData - dataPerPage;
-    const currentData = data.slice(indexOfFirstData, indexOfLastData);
+    const currentData = filteredData.slice(indexOfFirstData, indexOfLastData);
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+    // Handle deletion of a profile
+    const handleDelete = (index) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this profile?");
+        if (confirmDelete) {
+            const profiles = JSON.parse(localStorage.getItem('profiles')) || [];
+            profiles.splice(index, 1); // Remove the profile from the array
+            localStorage.setItem('profiles', JSON.stringify(profiles)); // Update localStorage
+            loadData(); // Refresh the data in the state
+        }
+    };
+
+    // Handle search query change
+    const handleSearch = (event) => {
+        setSearchQuery(event.target.value);
+    };
 
     return (
         <div className="flex-container">
-            <>
-                <Search />
-            </>
+            <div className="mb-3 d-flex justify-content-center w-100">
+                <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    className="form-control"
+                    style={{ maxWidth: '600px' }}
+                />
+            </div>
             <div className="table-responsive">
-                <table className="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>Profile</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone Number</th>
-                            <th>DOB</th>
-                            <th>Address</th>
-                            <th className="text-end">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {currentData.map((item, index) => (
-                            <tr key={index}>
-                                <td>{item.profile}</td>
-                                <td>{item.name}</td>
-                                <td>{item.email}</td>
-                                <td>{item.phoneNumber}</td>
-                                <td>{item.dob}</td>
-                                <td>{item.address}</td>
-                                <td className="text-end">
-                                    <Link to="/EditScreen">
-                                        <i className="fas fa-pen" style={{ marginRight: "10px" }}></i>
-                                    </Link>
-
-                                    <Link to="#">
-                                        <i className="fas fa-trash" style={{ color: "red" }}></i>
-                                    </Link>
-                                </td>
+                {filteredData.length === 0 ? (
+                    <p style={{ color: "red", textAlign: "center" }}>No data available</p>
+                ) : (
+                    <table className="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Profile</th>
+                                <th>Profile Picture</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>DOB</th>
+                                <th>Address</th>
+                                <th className="text-end">Action</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {currentData.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{`P${indexOfFirstData + index + 1}`}</td>
+                                    <td>
+                                        <img
+                                            src={item.profilePicture}
+                                            alt={`${item.name}'s profile`}
+                                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                        />
+                                    </td>
+                                    <td>{item.name}</td>
+                                    <td>{item.email}</td>
+                                    <td>{item.phoneNumber}</td>
+                                    <td>{item.dob}</td>
+                                    <td>{`${item.city}, ${item.district}, ${item.province}, ${item.country}`}</td>
+                                    <td className="text-end">
+                                        <Link to={`/EditScreen/${indexOfFirstData + index}`}>
+                                            <i className="fas fa-pen" style={{ marginRight: "10px" }}></i>
+                                        </Link>
+                                        <Link to="#" onClick={() => handleDelete(indexOfFirstData + index)}>
+                                            <i className="fas fa-trash" style={{ color: "red" }}></i>
+                                        </Link>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
 
-            {/* Pagination */}
-            <nav className="pagination-container" aria-label="page navigation">
-                <ul className="pagination">
-                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                        <a  href="#!" className="page-link" onClick={() => paginate(currentPage - 1)}>
-                            Previous
-                        </a>
-                    </li>
-                    {Array.from({ length: Math.ceil(data.length / dataPerPage) }).map((_, index) => (
-                        <li className={`page-item ${currentPage === index + 1 ? "active" : ""}`} key={index}>
-                            <a  href="#!" className="page-link" onClick={() => paginate(index + 1)}>
-                                {index + 1}
-                            </a>
-                        </li>
-                    ))}
-                    <li className={`page-item ${currentPage === Math.ceil(data.length / dataPerPage) ? "disabled" : ""}`}>
-                        <a  href="#!" className="page-link" onClick={() => paginate(currentPage + 1)}>
-                            Next
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            <div className="d-flex justify-content-between mb-3 align-items-center w-100">
+                {/* Button to navigate to ProfilesPage */}
+                <div className="mt-2">
+                    <Link to="/Profiles" className="btn btn-primary">View All Profiles</Link>
+                </div>
+
+                {/* Pagination */}
+                {filteredData.length > 0 && (
+                    <nav className="pagination-container" aria-label="page navigation">
+                        <ul className="pagination mb-0">
+                            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                                <a href="#!" className="page-link" onClick={() => paginate(currentPage - 1)}>
+                                    Previous
+                                </a>
+                            </li>
+                            {Array.from({ length: Math.ceil(filteredData.length / dataPerPage) }).map((_, index) => (
+                                <li className={`page-item ${currentPage === index + 1 ? "active" : ""}`} key={index}>
+                                    <a href="#!" className="page-link" onClick={() => paginate(index + 1)}>
+                                        {index + 1}
+                                    </a>
+                                </li>
+                            ))}
+                            <li className={`page-item ${currentPage === Math.ceil(filteredData.length / dataPerPage) ? "disabled" : ""}`}>
+                                <a href="#!" className="page-link" onClick={() => paginate(currentPage + 1)}>
+                                    Next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                )}
+            </div>
         </div>
     );
 };
