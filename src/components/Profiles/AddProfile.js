@@ -161,8 +161,6 @@ const AddProfile = () => {
             setErrors({});
             alert('Profile added successfully!');
             navigate("/all-profiles")
-            // Refresh the page to reflect changes
-            window.location.reload();
         }
     };
 
