@@ -71,109 +71,144 @@ const ManageProfileTable = () => {
     };
 
     return (
-        <div className="container mt-4">
-            <div className="d-flex justify-content-center">
-                <div className="col-xl-8 col-lg-8">
-                    <div className="card shadow-sm">
-                        <div className="card-body">
-                            <div className="content-header d-flex justify-content-center mb-3">
-                                <h2 className="content-title">Manage Profile</h2>
-                            </div>
-                            <div className="mb-3 d-flex justify-content-center">
-                                <input
-                                    type="text"
-                                    placeholder="Search..."
-                                    value={searchQuery}
-                                    onChange={handleSearch}
-                                    className="form-control"
-                                    style={{ maxWidth: '600px' }}
-                                />
-                            </div>
-
-                            <div className="table-responsive">
-                                {filteredData.length === 0 ? (
-                                    <p style={{ color: "red", textAlign: "center" }}>No data available</p>
-                                ) : (
-                                    <table className="table table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Profile</th>
-                                                <th>Profile Picture</th>
-                                                <th>Name</th>
-                                                <th>Email</th>
-                                                <th>Phone Number</th>
-                                                <th>DOB</th>
-                                                <th>Address</th>
-                                                <th className="text-end">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {currentData.map((item, index) => (
-                                                <tr key={index}>
-                                                    <td>{`P${indexOfFirstData + index + 1}`}</td>
-                                                    <td>
-                                                        <img
-                                                            src={item.profilePicture}
-                                                            alt={`${item.name}'s profile`}
-                                                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                                                        />
-                                                    </td>
-                                                    <td>{item.name}</td>
-                                                    <td>{item.email}</td>
-                                                    <td>{item.phoneNumber}</td>
-                                                    <td>{item.dob}</td>
-                                                    <td>{`${item.city}, ${item.district}, ${item.province}, ${item.country}`}</td>
-                                                    <td className="text-end">
-                                                        <Link to={`/EditScreen/${indexOfFirstData + index}`}>
-                                                            <i className="fas fa-pen" style={{ marginRight: "10px" }}></i>
-                                                        </Link>
-                                                        <Link to="#" onClick={() => handleDelete(indexOfFirstData + index)}>
-                                                            <i className="fas fa-trash" style={{ color: "red" }}></i>
-                                                        </Link>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                )}
-                            </div>
-
-                            {filteredData.length > 0 && (
-                                <div className="d-flex justify-content-between mb-3 align-items-center">
-                                    {/* Button to navigate to ProfilesPage */}
-                                    <div className="mt-2">
-                                        <Link to="/all-profiles" className="btn btn-primary">View All Profiles</Link>
-                                    </div>
-
-                                    {/* Pagination */}
-                                    <nav className="pagination-container" aria-label="page navigation">
-                                        <ul className="pagination mb-0">
-                                            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                                                <button className="page-link" onClick={() => paginate(currentPage - 1)}>
-                                                    Previous
-                                                </button>
-                                            </li>
-                                            {Array.from({ length: Math.ceil(filteredData.length / dataPerPage) }).map((_, index) => (
-                                                <li className={`page-item ${currentPage === index + 1 ? "active" : ""}`} key={index}>
-                                                    <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                        {index + 1}
-                                                    </button>
-                                                </li>
-                                            ))}
-                                            <li className={`page-item ${currentPage === Math.ceil(filteredData.length / dataPerPage) ? "disabled" : ""}`}>
-                                                <button className="page-link" onClick={() => paginate(currentPage + 1)}>
-                                                    Next
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            )}
+        <div className="container mt-4 mb-4">
+            <div className="card shadow-sm">
+                <div className="card-body">
+                    <div className="table-responsive">
+                        <div className="content-header d-flex justify-content-center mb-3">
+                            <h2 className="content-title">Manage Profile</h2>
                         </div>
+
+                        <div className="mb-3 d-flex justify-content-center">
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={searchQuery}
+                                onChange={handleSearch}
+                                className="form-control"
+                                style={{ maxWidth: '600px' }}
+                            />
+                        </div>
+                        {filteredData.length === 0 ? (
+                            <p style={{ color: 'red', textAlign: 'center' }}>No profiles available</p>
+                        ) : (
+                            <table className="table table-bordered table-hover">
+                                <thead className="thead-dark">
+                                    <tr>
+                                        <th scope="col">Profile</th>
+                                        <th scope="col">Profile Picture</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Phone Number</th>
+                                        <th scope="col">DOB</th>
+                                        <th scope="col">Address</th>
+                                        <th className="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentData.map((item, index) => (
+                                        <tr key={index}>
+                                            <td>{`P${indexOfFirstData + index + 1}`}</td>
+                                            <td>
+                                                <img
+                                                    src={item.profilePicture}
+                                                    alt={`${item.name}'s profile`}
+                                                    style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                                />
+                                            </td>
+                                            <td>{item.name}</td>
+                                            <td>{item.email}</td>
+                                            <td>{item.phoneNumber}</td>
+                                            <td>{item.dob}</td>
+                                            <td>{`${item.city}, ${item.district}, ${item.province}, ${item.country}`}</td>
+                                            <td className="text-end">
+                                                <Link to={`/EditScreen/${indexOfFirstData + index}`}>
+                                                    <i className="fas fa-pen" style={{ marginRight: "10px" }}></i>
+                                                </Link>
+                                                <Link to="#" onClick={() => handleDelete(indexOfFirstData + index)}>
+                                                    <i className="fas fa-trash" style={{ color: "red" }}></i>
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
+                    {filteredData.length > 0 && (
+                        <div className="d-flex justify-content-between mb-3 align-items-center">
+                            {/* Button to navigate to ProfilesPage */}
+                            <div className="mt-2">
+                                <Link to="/all-profiles" className="btn btn-primary">View All Profiles</Link>
+                            </div>
+
+                            {/* Pagination */}
+                            <nav className="pagination-container" aria-label="page navigation">
+                                <ul className="pagination mb-0">
+                                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                                        <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                                            Previous
+                                        </button>
+                                    </li>
+                                    {Array.from({ length: Math.ceil(filteredData.length / dataPerPage) }).map((_, index) => (
+                                        <li className={`page-item ${currentPage === index + 1 ? "active" : ""}`} key={index}>
+                                            <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                {index + 1}
+                                            </button>
+                                        </li>
+                                    ))}
+                                    <li className={`page-item ${currentPage === Math.ceil(filteredData.length / dataPerPage) ? "disabled" : ""}`}>
+                                        <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                                            Next
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
+
+
+        // <div className="container mt-4">
+        //     <div className="d-flex justify-content-center">
+        //         <div className="col-xl-8 col-lg-8">
+        //             <div className="card shadow-sm">
+        //                 <div className="card-body">
+        //                     <div className="content-header d-flex justify-content-center mb-3">
+        //                         <h2 className="content-title">Manage Profile</h2>
+        //                     </div>
+
+
+        //                     <div className="table-responsive">
+        //                         {filteredData.length === 0 ? (
+        //                             <p style={{ color: "red", textAlign: "center" }}>No data available</p>
+        //                         ) : (
+        //                             <table className="table table-bordered table-hover">
+        //                                 <thead>
+        //                                     <tr>
+        //                                         <th>Profile</th>
+        //                                         <th>Profile Picture</th>
+        //                                         <th>Name</th>
+        //                                         <th>Email</th>
+        //                                         <th>Phone Number</th>
+        //                                         <th>DOB</th>
+        //                                         <th>Address</th>
+        //                                         <th className="text-end">Action</th>
+        //                                     </tr>
+        //                                 </thead>
+
+        //                             </table>
+        //                         )}
+        //                     </div>
+
+
+        //                 </div>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </div>
     );
 };
 

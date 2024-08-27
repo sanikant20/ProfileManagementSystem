@@ -167,12 +167,12 @@ const AddProfile = () => {
         <section className="content-main">
             <form>
                 <div className="d-flex justify-content-center">
-                    <div className="col-xl-8 col-lg-8 mt-3">
+                    <div className="col-xl-8 col-lg-8 mt-4 mb-4">
                         <div className="card shadow-sm">
-                            <div className="card-body">
+                            <div className="card-body ">
 
                                 <div className="content-header d-flex justify-content-center mb-3">
-                                    <h2 className="content-title">Provide Profile Details</h2>
+                                    <h2 className="content-title">Enter Profile Details</h2>
                                 </div>
 
                                 <div className="mb-3 row align-items-center">
@@ -238,6 +238,21 @@ const AddProfile = () => {
                                     </div>
                                 </div>
 
+                                <div className="mb-3 row align-items-center">
+                                    <label htmlFor="profilePicture" className="col-sm-4 col-form-label">Profile Picture</label>
+                                    <div className="col-sm-8">
+                                        <input
+                                            type="file"
+                                            accept="image/png" // Ensuring only PNG files are accepted
+                                            className="form-control"
+                                            id="profilePicture"
+                                            onChange={handleImageChange}
+                                            style={{ textAlign: 'left' }}
+                                        />
+                                        {errors.profilePicture && <div className="text-danger">{errors.profilePicture}</div>}
+                                    </div>
+                                </div>
+
                                 <div className="mb-2">
                                     <label htmlFor="address" className="form-label">Address</label>
 
@@ -300,21 +315,6 @@ const AddProfile = () => {
                                             </select>
                                             {errors.country && <div className="text-danger">{errors.country}</div>}
                                         </div>
-                                    </div>
-                                </div>
-
-                                <div className="mb-3 row align-items-center">
-                                    <label htmlFor="profilePicture" className="col-sm-4 col-form-label">Profile Picture</label>
-                                    <div className="col-sm-8">
-                                        <input
-                                            type="file"
-                                            accept="image/png" // Ensuring only PNG files are accepted
-                                            className="form-control"
-                                            id="profilePicture"
-                                            onChange={handleImageChange}
-                                            style={{ textAlign: 'left' }}
-                                        />
-                                        {errors.profilePicture && <div className="text-danger">{errors.profilePicture}</div>}
                                     </div>
                                 </div>
 
