@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const provinces = [
     'Koshi Province',
@@ -25,6 +26,7 @@ const AddProfile = () => {
 
     const [errors, setErrors] = useState({});
     const [countries, setCountries] = useState([]); // State for the list of countries
+    const navigate = useNavigate();
 
     // Fetch the list of countries on component mount
     useEffect(() => {
@@ -158,6 +160,7 @@ const AddProfile = () => {
 
             setErrors({});
             alert('Profile added successfully!');
+            navigate("/all-profiles")
             // Refresh the page to reflect changes
             window.location.reload();
         }
